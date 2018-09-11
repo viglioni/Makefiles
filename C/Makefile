@@ -67,8 +67,7 @@ add_method:
 	echo $$method "{" >> $(SRC_PATH)/$$module.c ; \
 	echo "" >> $(SRC_PATH)/$$module.c ; \
 	echo "}" >> $(SRC_PATH)/$$module.c ; \
-	echo "Method added with success!" ; \
-	cat $(SRC_PATH)/$$module.c  \
+	echo "Method added with success!" ;  \
 	) || \
 	echo "Module does not exist! Create it with \"make new_module\""
 
