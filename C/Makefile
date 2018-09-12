@@ -107,6 +107,8 @@ help:
 	Clean *.o, *~ and exec files with: make clean\n\
 	To add a method to a .c and .h file: make add_method\n\
 	\t- the .c and .h files must exist! You may create them with \"make new_module\"\n\
+	To add a library: make add_library\n\
+	\t- remember putting the name in <> or quotes. e.g. <math.h>, \"custom_lib.h\"\n\
 	Good work!!!\n\n\n"
 
 # be careful, this command will delete your whole project leaving only the Makefile behind
