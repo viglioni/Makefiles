@@ -4,8 +4,13 @@
 
 ### C/Makefile
 
-This Makefile allows you to create your project; automatically compile no matter how many .c and .h files you have; add .c and .h files; add libraries; and add functions.
-All includes should be made in the file headers/headers.h and all .c files should only include this headers.h file.
+This Makefile allows you to: 
+* create your project; 
+* automatically compile no matter how many .c and .h files you have; 
+* create .c and .h files; 
+* add libraries; 
+* add functions;
+Suggestion: all includes should be made in the file "headers/headers.h" and all .c files should only include this file.
 
 ### Usage
 #### Start your project
