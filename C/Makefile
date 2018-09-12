@@ -32,21 +32,24 @@ all: start welcome
 
 welcome:
 	@printf "\n\nWelcome!\nType \"make help\" for usage!\n\n"
-compile: $(EXEC)
+compile: start $(EXEC)
 
 run: compile
 	$(EXEC)
 
-new_module:
+new_module: start
 	@read -p "Enter Module Name: " module; \
 	touch $(INC_PATH)/$$module.h; \
 	touch $(SRC_PATH)/$$module.c; \
 	([ -s $(SRC_PATH)/$$module.c ] && echo "Module already exists!!") || \
 	( \
+	printf "#ifndef _$$module\n#define _$$module\n#endif\n" > $(INC_PATH)/$$module.h ; \
 	printf "#include \"headers.h\" \n" > $(SRC_PATH)/$$module.c ; \
-	echo "#include \"$$module.h\"" >> $(INC_PATH)/headers.h ; \
+	sed -i '' '/endif/d' $(INC_PATH)/headers.h ; \
+	echo "#include \"$$module.h\" " >>  $(INC_PATH)/headers.h ; \
+	echo "#endif" >>  $(INC_PATH)/headers.h ; \
 	echo "Module $$module created with success!" ; \
-	ls $(SRC_PATH) $(INC_PATH) \
+	ls $(SRC_PATH) $(INC_PATH) ; \
 	)
 
 start:
@@ -54,22 +57,35 @@ start:
 	@mkdir -p $(SRC_DIR) $(EXEC_DIR) $(INC_DIR) $(OBJ_DIR)
 	@touch $(SRC_PATH)/main.c
 	@touch $(INC_PATH)/headers.h
-	@[ -s $(SRC_PATH)/main.c ] || printf "#include \"headers.h\" \n\nint main(){\nputs(\"Your project is working!\");\nreturn 0;\n}\n" > $(SRC_PATH)/main.c
-	@[ -s $(INC_PATH)/headers.h ] || printf "#include <stdio.h>\n" > $(INC_PATH)/headers.h
-	@ls -R
+	@([ -s $(SRC_PATH)/main.c ] && [ -s $(INC_PATH)/headers.h ] ) || ( \
+	printf "#include \"headers.h\" \n\nint main(){\nputs(\"Your project is working!\");\nreturn 0;\n}\n" > $(SRC_PATH)/main.c ; \
+	printf "#ifndef _HEADERS \n\
+	#define _HEADERS \n\
+	#include <stdio.h>\n\
+	#endif\n" > $(INC_PATH)/headers.h ; \
+	ls -R ; \
+	)
 
-add_method:
+add_method: start
 	@read -p "Enter method header (e.g. \"int sum(int a, int b)\" without quotes and ;): " method; \
 	read -p "For which module?: " module; \
 	( \
 	([ -f $(SRC_PATH)/$$module.c ] && [ -f $(INC_PATH)/$$module.h ]) && \
+	sed -i '' '/endif/d' $(INC_PATH)/$$module.h ; \
 	echo $$method ";" >> $(INC_PATH)/$$module.h ; \
+	echo "#endif" >>  $(INC_PATH)/$$module.h ; \
 	echo $$method "{" >> $(SRC_PATH)/$$module.c ; \
 	echo "" >> $(SRC_PATH)/$$module.c ; \
 	echo "}" >> $(SRC_PATH)/$$module.c ; \
 	echo "Method added with success!" ;  \
 	) || \
 	echo "Module does not exist! Create it with \"make new_module\""
+
+add_library: start
+	@read -p "Enter library name, e.g. <math.h>: " lib; \
+	sed -i '' '/endif/d' $(INC_PATH)/headers.h ; \
+	echo "#include $$lib" >> $(INC_PATH)/headers.h ; \
+	echo "#endif" >>  $(INC_PATH)/headers.h ; \
 
 $(OBJECTS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.c
 	@$(CC) $(INC_FLAGS) $(CFLAGS) $< -o $@
@@ -92,3 +108,8 @@ help:
 	To add a method to a .c and .h file: make add_method\n\
 	\t- the .c and .h files must exist! You may create them with \"make new_module\"\n\
 	Good work!!!\n\n\n"
+
+# be careful, this command will delete your whole project leaving only the Makefile behind
+# uncomment to use.
+# super_rm:
+# 	rm -rf $(SRC_DIR) $(EXEC_DIR) $(INC_DIR) $(OBJ_DIR)
