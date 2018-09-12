@@ -10,7 +10,19 @@ This Makefile allows you to:
 * create .c and .h files; 
 * add libraries; 
 * add functions;
+
 Suggestion: all includes should be made in the file "headers/headers.h" and all .c files should only include this file.
+
+This Makefile was tested on a Mac. Maybe the *sed* commands will not work properly on linux the way they are writen. If so, try to change them
+
+from:
+```shell
+sed -i '' '/endif/d file
+```
+to:
+```shell
+sed -i '/endif/d file
+```
 
 ### Usage
 #### Start your project
